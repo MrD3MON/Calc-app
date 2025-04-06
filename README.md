@@ -1,29 +1,86 @@
-# Create T3 App
+# Scientific Calculator App
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+<div align="center">
+  <img src="/public/AppLogo.png" alt="Calculator App Logo" width="200" />
+</div>
 
-## What's next? How do I make an app with this?
+## Overview
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+A modern scientific calculator web application built with Next.js and the T3 stack. This calculator features a clean, responsive interface with both light and dark mode support. It provides standard arithmetic operations as well as advanced scientific functions.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## Features
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+- **Scientific Functions**: sin, cos, tan, log, ln, square root, exponents
+- **Responsive Design**: Works on mobile and desktop devices
+- **Dark/Light Mode**: Theme toggle for user preference
+- **Calculation History**: Keep track of your previous calculations
+- **Keyboard Support**: Use your keyboard for quick calculations
+- **Modern UI**: Built with Tailwind CSS and shadcn/ui components
 
-## Learn More
+## Tech Stack
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+- [Next.js 15](https://nextjs.org/) - React framework with App Router
+- [React 19](https://react.dev/) - UI library
+- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
+- [shadcn/ui](https://ui.shadcn.com/) - UI component library
+- [TypeScript](https://www.typescriptlang.org/) - Type safety
+- [Lucide React](https://lucide.dev/) - Icon library
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+## Getting Started
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+### Prerequisites
 
-## How do I deploy this?
+- Node.js 18+ 
+- npm or pnpm or yarn
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+### Installation
+
+1. Clone the repository
+   ```bash
+   git clone https://github.com/yourusername/calc-app.git
+   cd calc-app
+   ```
+
+2. Install dependencies
+   ```bash
+   npm install
+   # or
+   pnpm install
+   # or
+   yarn install
+   ```
+
+3. Run the development server
+   ```bash
+   npm run dev
+   # or
+   pnpm dev
+   # or
+   yarn dev
+   ```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
+
+## Usage
+
+- Use the calculator interface to perform calculations
+- Toggle between light and dark mode with the theme button
+- View calculation history by clicking the history icon
+- Use keyboard shortcuts for faster input
+
+## Deployment
+
+This app can be easily deployed on [Vercel](https://vercel.com) or any other Next.js-compatible hosting service.
+
+```bash
+npm run build
+npm run start
+```
+
+## License
+
+MIT
+
+## Author
+
+Created with ❤️ by [Your Name]

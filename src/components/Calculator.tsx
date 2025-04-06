@@ -13,8 +13,9 @@ import {
   SheetDescription,
   SheetClose
 } from "~/components/ui/sheet";
-import { HistoryIcon } from "lucide-react";
+import { Github, HistoryIcon } from "lucide-react";
 import { ThemeToggle } from "~/components/ThemeToggle";
+import { FaGithub } from "react-icons/fa";
 
 export function Calculator() {
   const [display, setDisplay] = useState("");
@@ -23,6 +24,19 @@ export function Calculator() {
   const [lastOperation, setLastOperation] = useState("");
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 640);
+    };
+    
+    checkMobile();
+    
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Function to calculate result
   const calculateResult = (expression: string) => {
@@ -197,21 +211,30 @@ export function Calculator() {
   return (
     <div 
       ref={containerRef}
-      className="flex flex-col gap-4 w-full max-w-md mx-auto p-4 bg-background border rounded-lg shadow-lg transition-colors dark:shadow-xl dark:border-border outline-none" 
+      className="flex flex-col gap-3 sm:gap-4 w-full max-w-md mx-auto p-3 sm:p-4 bg-background border rounded-lg shadow-lg transition-colors dark:shadow-xl dark:border-border outline-none" 
       tabIndex={0}
     >
       <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold">Scientific Calculator</h2>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center">
+          <h2 className="text-base sm:text-lg font-semibold mr-1">
+            {isMobile ? "Calculator" : "Scientific Calculator"}
+          </h2>
+          <Button variant="ghost" size="icon" asChild className="h-8 w-8 sm:h-10 sm:w-10">
+            <a href="https://github.com/MrD3MON" target="_blank" rel="noopener noreferrer">
+              <FaGithub className="size-4 sm:size-5" />
+            </a>
+          </Button>
+        </div>
+        <div className="flex items-center gap-1 sm:gap-2">
           <ThemeToggle />
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <HistoryIcon className="size-5" />
+              <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-10 sm:w-10">
+                <HistoryIcon className="size-4 sm:size-5" />
                 <span className="sr-only">History</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="p-4">
+            <SheetContent side="right" className="p-4 w-full sm:max-w-md">
               <SheetHeader>
                 <SheetTitle>Calculation History</SheetTitle>
                 <SheetDescription>
@@ -223,7 +246,7 @@ export function Calculator() {
                   history.map((item, index) => (
                     <div 
                       key={index} 
-                      className="p-3 rounded-md bg-muted hover:bg-muted/80 cursor-pointer transition-colors dark:text-foreground"
+                      className="p-3 rounded-md bg-muted hover:bg-muted/80 cursor-pointer transition-colors dark:text-foreground text-sm sm:text-base"
                       onClick={() => handleHistoryItemClick(item)}
                     >
                       {item}
@@ -240,52 +263,52 @@ export function Calculator() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-1 p-3 rounded-lg bg-muted/40 border transition-colors dark:bg-muted/10 dark:border-border">
-        <div className="font-mono text-sm text-muted-foreground h-6 overflow-x-auto whitespace-nowrap flex items-center justify-end">
+      <div className="flex flex-col gap-1 p-2 sm:p-3 rounded-lg bg-muted/40 border transition-colors dark:bg-muted/10 dark:border-border">
+        <div className="font-mono text-xs sm:text-sm text-muted-foreground h-5 sm:h-6 overflow-x-auto whitespace-nowrap flex items-center justify-end">
           {lastOperation}
         </div>
-        <div className="font-mono text-lg h-10 overflow-x-auto whitespace-nowrap flex items-center justify-end">
+        <div className="font-mono text-base sm:text-lg h-8 sm:h-10 overflow-x-auto whitespace-nowrap flex items-center justify-end">
           {display || "0"}
         </div>
-        <div className="font-mono text-2xl font-semibold h-14 overflow-x-auto whitespace-nowrap flex items-center justify-end">
+        <div className="font-mono text-xl sm:text-2xl font-semibold h-12 sm:h-14 overflow-x-auto whitespace-nowrap flex items-center justify-end">
           {result || "0"}
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-3 gap-1 sm:gap-2">
         {controlButtons.map((btn) => (
           <Button
             key={btn.value}
             variant={btn.variant}
             onClick={() => handleButtonClick(btn.value)}
-            className="text-lg font-medium transition-colors"
+            className="text-base sm:text-lg font-medium transition-colors h-10 sm:h-12"
           >
             {btn.label}
           </Button>
         ))}
       </div>
 
-      <div className="grid grid-cols-5 gap-2">
+      <div className="grid grid-cols-5 gap-1 sm:gap-2">
         {scientificButtons.map((btn) => (
           <Button
             key={btn.value}
             variant="secondary"
             onClick={() => handleButtonClick(btn.value)}
-            className="text-sm transition-colors"
+            className="text-xs sm:text-sm transition-colors h-8 sm:h-10 px-1 sm:px-3"
           >
             {btn.label}
           </Button>
         ))}
       </div>
 
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-4 gap-1 sm:gap-2">
         {numberButtons.map((btn) => (
           <Button
             key={btn.value}
             variant={btn.value === "=" ? "default" : "outline"}
             onClick={() => handleButtonClick(btn.value)}
             className={cn(
-              "text-lg font-medium h-12 transition-colors",
+              "text-base sm:text-lg font-medium h-10 sm:h-12 transition-colors",
               btn.value === "=" && "bg-primary text-primary-foreground col-span-1"
             )}
           >
