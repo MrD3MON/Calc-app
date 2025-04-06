@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { cn } from "~/lib/utils";
@@ -10,7 +10,8 @@ import {
   SheetHeader, 
   SheetTitle, 
   SheetTrigger, 
-  SheetDescription 
+  SheetDescription,
+  SheetClose
 } from "~/components/ui/sheet";
 import { HistoryIcon } from "lucide-react";
 import { ThemeToggle } from "~/components/ThemeToggle";
@@ -20,30 +21,39 @@ export function Calculator() {
   const [result, setResult] = useState("");
   const [history, setHistory] = useState<string[]>([]);
   const [lastOperation, setLastOperation] = useState("");
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Function to calculate result
+  const calculateResult = (expression: string) => {
+    try {
+      // Replace special characters with JavaScript math operations
+      let processedExpression = expression
+        .replace(/×/g, "*")
+        .replace(/÷/g, "/")
+        .replace(/π/g, "Math.PI")
+        .replace(/sin/g, "Math.sin")
+        .replace(/cos/g, "Math.cos")
+        .replace(/tan/g, "Math.tan")
+        .replace(/log/g, "Math.log10")
+        .replace(/ln/g, "Math.log")
+        .replace(/sqrt/g, "Math.sqrt")
+        .replace(/\^/g, "**");
+
+      const calculatedResult = eval(processedExpression).toString();
+      setResult(calculatedResult);
+      setLastOperation(`${expression} = ${calculatedResult}`);
+      setHistory([`${expression} = ${calculatedResult}`, ...history]);
+      return calculatedResult;
+    } catch (error) {
+      setResult("Error");
+      return "Error";
+    }
+  };
 
   const handleButtonClick = (value: string) => {
     if (value === "=") {
-      try {
-        // Replace special characters with JavaScript math operations
-        let expression = display
-          .replace(/×/g, "*")
-          .replace(/÷/g, "/")
-          .replace(/π/g, "Math.PI")
-          .replace(/sin/g, "Math.sin")
-          .replace(/cos/g, "Math.cos")
-          .replace(/tan/g, "Math.tan")
-          .replace(/log/g, "Math.log10")
-          .replace(/ln/g, "Math.log")
-          .replace(/sqrt/g, "Math.sqrt")
-          .replace(/\^/g, "**");
-
-        const calculatedResult = eval(expression).toString();
-        setResult(calculatedResult);
-        setLastOperation(`${display} = ${calculatedResult}`);
-        setHistory([`${display} = ${calculatedResult}`, ...history]);
-      } catch (error) {
-        setResult("Error");
-      }
+      calculateResult(display);
     } else if (value === "C") {
       setDisplay("");
       setResult("");
@@ -53,6 +63,96 @@ export function Calculator() {
       setDisplay(display + result);
     } else {
       setDisplay(display + value);
+    }
+  };
+
+  // Handle keyboard input
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only process keyboard input when the calculator has focus
+      if (!containerRef.current?.contains(document.activeElement) && 
+          document.activeElement?.tagName !== 'BODY') {
+        return;
+      }
+      
+      // Don't capture keyboard events when input fields have focus
+      if (document.activeElement?.tagName === 'INPUT' || 
+          document.activeElement?.tagName === 'TEXTAREA') {
+        return;
+      }
+
+      e.preventDefault();
+      
+      const key = e.key;
+      
+      // Map keys to calculator functions
+      if (key >= '0' && key <= '9') {
+        handleButtonClick(key);
+      } else if (key === '.') {
+        handleButtonClick('.');
+      } else if (key === '+') {
+        handleButtonClick('+');
+      } else if (key === '-') {
+        handleButtonClick('-');
+      } else if (key === '*') {
+        handleButtonClick('×');
+      } else if (key === '/') {
+        handleButtonClick('÷');
+      } else if (key === '^') {
+        handleButtonClick('^');
+      } else if (key === '(') {
+        handleButtonClick('(');
+      } else if (key === ')') {
+        handleButtonClick(')');
+      } else if (key === 'Enter' || key === '=') {
+        handleButtonClick('=');
+      } else if (key === 'Backspace') {
+        handleButtonClick('←');
+      } else if (key === 'Escape' || key === 'Delete') {
+        handleButtonClick('C');
+      } else if (key === 'p') {
+        handleButtonClick('π');
+      } else if (key.toLowerCase() === 's') {
+        handleButtonClick('sin');
+      } else if (key.toLowerCase() === 'c') {
+        handleButtonClick('cos');
+      } else if (key.toLowerCase() === 't') {
+        handleButtonClick('tan');
+      } else if (key.toLowerCase() === 'l') {
+        handleButtonClick('log');
+      } else if (key.toLowerCase() === 'n') {
+        handleButtonClick('ln');
+      } else if (key.toLowerCase() === 'r') {
+        handleButtonClick('sqrt');
+      } else if (key.toLowerCase() === 'a') {
+        handleButtonClick('ANS');
+      }
+    };
+
+    // Add event listener
+    window.addEventListener('keydown', handleKeyDown);
+    
+    // Focus the calculator container on mount
+    if (containerRef.current) {
+      containerRef.current.focus();
+    }
+    
+    // Clean up
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [display, result]); // Re-run when display or result changes
+
+  const handleHistoryItemClick = (item: string) => {
+    const [expression = ""] = item.split(" = ");
+    setDisplay(expression);
+    
+    // Close the sheet
+    setIsSheetOpen(false);
+    
+    // Set focus back to the calculator
+    if (containerRef.current) {
+      containerRef.current.focus();
     }
   };
 
@@ -95,35 +195,36 @@ export function Calculator() {
   ];
 
   return (
-    <div className="flex flex-col gap-4 w-full max-w-md mx-auto p-4 bg-background border rounded-lg shadow-lg transition-colors dark:shadow-xl dark:border-border">
+    <div 
+      ref={containerRef}
+      className="flex flex-col gap-4 w-full max-w-md mx-auto p-4 bg-background border rounded-lg shadow-lg transition-colors dark:shadow-xl dark:border-border outline-none" 
+      tabIndex={0}
+    >
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-semibold">Scientific Calculator</h2>
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Sheet>
+          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
                 <HistoryIcon className="size-5" />
                 <span className="sr-only">History</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right">
+            <SheetContent side="right" className="p-4">
               <SheetHeader>
                 <SheetTitle>Calculation History</SheetTitle>
                 <SheetDescription>
                   Your previous calculations
                 </SheetDescription>
               </SheetHeader>
-              <div className="mt-6 flex flex-col gap-2">
+              <div className="mt-6 flex flex-col gap-3">
                 {history.length > 0 ? (
                   history.map((item, index) => (
                     <div 
                       key={index} 
                       className="p-3 rounded-md bg-muted hover:bg-muted/80 cursor-pointer transition-colors dark:text-foreground"
-                      onClick={() => {
-                        const [expression = ""] = item.split(" = ");
-                        setDisplay(expression);
-                      }}
+                      onClick={() => handleHistoryItemClick(item)}
                     >
                       {item}
                     </div>
