@@ -3,11 +3,11 @@
 import { Button } from "~/components/ui/button";
 import { useTheme } from "~/components/ThemeProvider";
 import { SunIcon, MoonIcon, LaptopIcon } from "lucide-react";
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 
 export function ThemeToggle() {
@@ -39,4 +39,4 @@ export function ThemeToggle() {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-} 
+}
